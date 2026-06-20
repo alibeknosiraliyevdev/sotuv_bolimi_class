@@ -30,6 +30,9 @@ class ProductStructure(ABC):
     def get_product_unit(self):
         pass
     
-    
+    @abstractmethod
     def add_product(self):
+        pass
+    @abstractmethod
+    def sell_product(self):
         pass

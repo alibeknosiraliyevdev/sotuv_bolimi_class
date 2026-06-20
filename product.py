@@ -84,5 +84,25 @@ class Product(ProductStructure):
         ws[f'E{row_num}'] = current_sold + self.product_quantity
         wb.save('products.xlsx')
         wb.close()
-        print(f"{self.product_quantity} ta\n{self.product_name} sotildi."
-        )
+        print(f"{self.product_quantity} ta\n{self.product_name} sotildi.")
+
+    @classmethod
+    def get_all_products(cls):
+        wb = load_workbook("products.xlsx", data_only=True)
+        barcha_sahifalar = {}
+        for sheet_name in wb.sheetnames:
+            sheet = wb[sheet_name]
+            sahifa_qatorlari = []
+            for row in sheet.iter_rows(values_only=True):
+                if any(row):
+                    sahifa_qatorlari.append(list(row))
+            if not sahifa_qatorlari:
+                continue
+            headers = sahifa_qatorlari.pop(0)
+            data_list = []
+            for row in sahifa_qatorlari:
+                row_dict = dict(zip(headers, row))
+                data_list.append(row_dict)
+            barcha_sahifalar[sheet_name] = data_list
+        wb.close()
+        return barcha_sahifalar
