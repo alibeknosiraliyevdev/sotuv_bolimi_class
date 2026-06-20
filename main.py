@@ -1,5 +1,6 @@
 from product import Product
 
+print("Do'kon bo'limi".center(135))
 while True:
     print("\n===== MENU =====")
     print("1. Add Product")
