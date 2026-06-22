@@ -1,6 +1,5 @@
 from main_abc import ProductStructure
-from openpyxl import Workbook, load_workbook
-
+from openpyxl import load_workbook
 
 class Product(ProductStructure):
     def __init__(self, product_family, product_name, product_quantity, product_price, selling_price, product_sold, product_unit):
@@ -32,8 +31,22 @@ class Product(ProductStructure):
 
     def get_product_unit(self):
         return self.product_unit
-    
-    
+######################################### Add Product History ##############################################
+    @staticmethod
+    def save_add_history(product_name, product_quantity, product_price, product_unit):
+        history_wb = load_workbook("history.xlsx")
+        history_ws = history_wb["add_product"]
+
+        history_ws.append([
+            product_name,
+            product_quantity,
+            product_price,
+            product_unit
+        ])
+
+        history_wb.save("history.xlsx")
+        history_wb.close()
+######################################### Add Product ##############################################
     def add_product(self):
         wb = load_workbook('products.xlsx')
         if self.product_family not in wb.sheetnames:
@@ -58,6 +71,53 @@ class Product(ProductStructure):
         wb.save('products.xlsx')  
         wb.close()
 
+        Product.save_add_history(
+            self.product_name,
+            self.product_quantity,
+            self.product_price,
+            self.product_unit
+        )
+######################################### Add Product Report ##############################################
+    @classmethod
+    def get_add_history(cls):
+        wb = load_workbook("history.xlsx", data_only=True)
+        ws = wb["add_product"]
+
+        qatorlar = []
+
+        for row in ws.iter_rows(values_only=True):
+            if any(row):
+                qatorlar.append(list(row))
+
+        if not qatorlar:
+            wb.close()
+            return []
+
+        headers = qatorlar.pop(0)
+
+        data_list = []
+        for row in qatorlar:
+            row_dict = dict(zip(headers, row))
+            data_list.append(row_dict)
+
+        wb.close()
+        return data_list
+######################################### Sell Product History ##############################################
+    @staticmethod
+    def save_sell_history(product_name, product_quantity, selling_price, product_unit):
+        history_wb = load_workbook("history.xlsx")
+        history_ws = history_wb["sell_product"]
+
+        history_ws.append([
+            product_name,
+            product_quantity,
+            selling_price,
+            product_unit
+        ])
+
+        history_wb.save("history.xlsx")
+        history_wb.close()   
+######################################### Sell Product ##############################################
     def sell_product(self):
         wb = load_workbook('products.xlsx')
         if self.product_family not in wb.sheetnames:
@@ -82,10 +142,46 @@ class Product(ProductStructure):
         ws[f'B{row_num}'] = current_quantity - self.product_quantity
         current_sold = int(ws[f'E{row_num}'].value)
         ws[f'E{row_num}'] = current_sold + self.product_quantity
+
+        selling_price = ws[f'D{row_num}'].value
+        product_unit = ws[f'F{row_num}'].value
+
         wb.save('products.xlsx')
         wb.close()
-        print(f"{self.product_quantity} ta\n{self.product_name} sotildi.")
+        print(f"{self.product_quantity} ta {self.product_name} sotildi.")
 
+        Product.save_sell_history(
+            self.product_name,
+            self.product_quantity,
+            selling_price,
+            product_unit
+        )
+######################################### Sell Product Report ##############################################
+    @classmethod
+    def get_sell_history(cls):
+        wb = load_workbook("history.xlsx", data_only=True)
+        ws = wb["sell_product"]
+
+        qatorlar = []
+
+        for row in ws.iter_rows(values_only=True):
+            if any(row):
+                qatorlar.append(list(row))
+
+        if not qatorlar:
+            wb.close()
+            return []
+
+        headers = qatorlar.pop(0)
+
+        data_list = []
+        for row in qatorlar:
+            row_dict = dict(zip(headers, row))
+            data_list.append(row_dict)
+
+        wb.close()
+        return data_list
+######################################### Database Report ##############################################
     @classmethod
     def get_all_products(cls):
         wb = load_workbook("products.xlsx", data_only=True)

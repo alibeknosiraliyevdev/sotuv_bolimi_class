@@ -1,5 +1,4 @@
 from product import Product
-from openpyxl import load_workbook
 import getpass
 
 print("Do'kon bo'limi".center(135))
@@ -11,25 +10,45 @@ while True:
     print("0. Exit")
 
     menu = input("Tanlang: ")
-
+######################################### Add Product ##############################################
     if menu == "1":
         family = input("Mahsulot oilasi: ")
-        name = input("Mahsulot nomi: ")
-        quantity = int(input("Miqdori: "))
-        buy_price = int(input("Sotib olish narxi: "))
-        sell_price = int(input("Sotish narxi: "))
-        unit = input("Birligi: ")
-
+        if family == '0':
+            continue
+        else:
+            name = input("Mahsulot nomi: ")
+            if name == '0':
+                continue
+            else:
+                quantity = int(input("Miqdori: "))
+                if quantity == '0':
+                    continue
+                else:
+                    buy_price = int(input("Sotib olish narxi: "))
+                    if family == '0':
+                        continue
+                    else:
+                        sell_price = int(input("Sotish narxi: "))
+                        if family == '0':
+                            continue
+                        else:
+                            unit = input("Birligi: ")
         product = Product(family,name,quantity,buy_price,sell_price,0,unit)
         product.add_product()
-
+######################################### Sell Product ##############################################
     elif menu == "2":
         family = input("Mahsulot oilasi: ")
-        name = input("Mahsulot nomi: ")
-        quantity = int(input("Nechta sotildi: "))
-
+        if family == '0':
+            continue
+        else:
+            name = input("Mahsulot nomi: ")
+            if name == '0':
+                continue
+            else:
+                quantity = int(input("Nechta sotildi: "))
         product = Product(family,name,quantity,0,0,0,"")
         product.sell_product()
+######################################### Report Database ##############################################
     elif menu == "3":
         login=input("Login: ")
         parol=getpass.getpass("Parol: ")
@@ -41,13 +60,17 @@ while True:
                 print("3. Database")
                 print("0. Chiqish")
                 menu_add=input("Tanlang: ")
-                if menu_add == '3':
+                if menu_add == '1':
+                    print(Product.get_add_history())
+                elif menu_add == '2':
+                    print(Product.get_sell_history())
+                elif menu_add == '3':
                     print(Product.get_all_products())
                 elif menu_add == '0':
                     break
+######################################### Exit ##############################################
     elif menu == "0":
         break
-
     else:
         print("Noto'g'ri tanlov!")
 
