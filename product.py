@@ -61,13 +61,17 @@ class Product(ProductStructure):
                 ws.append([self.product_name, self.product_quantity, self.product_price, self.selling_price, self.product_sold, self.product_unit])
                 wb.save('products.xlsx')
             else:
-                for cell in ws['A']:
+                for cell in ws['A'][1:]:
                     if cell.value == self.product_name:
                         row = cell.row
                         current = int(ws[f'B{row}'].value)
-                        ws[f'B{row}'] = current + self.product_quantity                        
-                        print(f"{self.product_name} miqdori {current+self.product_quantity} ga o'zgartirildi va saqlandi.")
+                        ws[f'B{row}'] = current + self.product_quantity
+
+                        self.product_price = ws[f'C{row}'].value
+
+                        print(f"{self.product_name} miqdori {current+self.product_quantity} ga o'zgartirildi.")
                         break
+
         wb.save('products.xlsx')  
         wb.close()
 
